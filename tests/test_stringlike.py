@@ -5,16 +5,20 @@ import unittest
 import furl
 
 
+class StringLikeObjectTestClass(furl.StringLikeObject):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return self.value
+
+    def load(self, value):
+        self.value = value
+
+
 class StringLikeObjectTestCase(unittest.TestCase):
     """StringLikeObject"""
     def _get_test_class(self, value):
-        class StringLikeObjectTestClass(furl.StringLikeObject):
-            def __init__(self, value):
-                self.value = value
-
-            def __str__(self):
-                return self.value
-
         return StringLikeObjectTestClass(value)
 
     def _assert_raises(self, function):
@@ -36,6 +40,9 @@ class StringLikeObjectTestCase(unittest.TestCase):
         class TestClassTwo(furl.StringLikeObject):
             def __str__(self):
                 super(TestClassTwo, self).__str__()
+
+            def load(self, value):
+                pass
 
         self._assert_raises(lambda: str(TestClassTwo()))
 
@@ -92,3 +99,11 @@ class StringLikeObjectTestCase(unittest.TestCase):
 
     def test_length(self):
         assert len(self._get_test_class('12345')) == 5
+
+    def test_can_be_pickled(self):
+        import pickle
+
+        item = self._get_test_class('12345')
+        pickled_item = pickle.dumps(item)
+        loaded_item = pickle.loads(pickled_item)
+        assert item == loaded_item

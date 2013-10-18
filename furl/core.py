@@ -180,7 +180,7 @@ class Path(object):
     def __eq__(self, other):
         try:
             is_equal = str(self) == str(other)
-        except (TypeError, ValueError):
+        except Exception:
             is_equal = False
 
         return is_equal
@@ -240,15 +240,6 @@ class PathCompositionInterface(object):
     @property
     def path(self):
         return self._path
-
-    @property
-    def pathstr(self):
-        """This method is deprecated. Use str(Furl.path) instead."""
-        s = ('Furl.pathstr is deprecated. Use str(Furl.path) instead. There '
-             'should be one, and preferably only one, obvious way to serialize '
-             'a Path object to a string.')
-        warnings.warn(s, DeprecationWarning)
-        return str(self._path)
 
     def __setattr__(self, attr, value):
         """
@@ -526,15 +517,6 @@ class QueryCompositionInterface(object):
     @property
     def query(self):
         return self._query
-
-    @property
-    def querystr(self):
-        """This method is deprecated. Use str(Furl.query) instead."""
-        s = ('Furl.querystr is deprecated. Use str(Furl.query) instead. There '
-             'should be one, and preferably only one, obvious way to serialize '
-             'a Query object to a string.')
-        warnings.warn(s, DeprecationWarning)
-        return str(self._query)
 
     @property
     def args(self):
@@ -1060,7 +1042,12 @@ class Furl(URLPathCompositionInterface, QueryCompositionInterface,
         return self.__class__(self)
 
     def __eq__(self, other):
-        return self.url == str(other)
+        try:
+            is_equal = self.url == str(other)
+        except Exception:
+            is_equal = False
+
+        return is_equal
 
     def __setattr__(self, attr, value):
         if (not PathCompositionInterface.__setattr__(self, attr, value) and

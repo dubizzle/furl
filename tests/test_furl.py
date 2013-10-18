@@ -216,12 +216,8 @@ class TestPath(unittest.TestCase):
         assert str(p) == '/a/b/c/'
 
     def test_add(self):
-        # TODO: what is this?
-        # DEBUG DEBUG DEBUG
-        return True
-
         # URL paths.
-        p = URLPath('a/b/c/')
+        p = furl.Path('a/b/c/')
         assert p.add('d') == p
         assert not p.isabsolute
         assert str(p) == 'a/b/c/d'
@@ -232,7 +228,7 @@ class TestPath(unittest.TestCase):
         assert not p.isabsolute
         assert str(p) == 'a/b/c/d/e/f/e%20e/'
 
-        p = URLPath()
+        p = furl.Path()
         assert not p.isabsolute
         assert p.add('/') == p
         assert p.isabsolute
@@ -241,7 +237,7 @@ class TestPath(unittest.TestCase):
         assert p.isabsolute
         assert str(p) == '/pump'
 
-        p = URLPath()
+        p = furl.Path()
         assert not p.isabsolute
         assert p.add(['', '']) == p
         assert p.isabsolute
@@ -251,18 +247,19 @@ class TestPath(unittest.TestCase):
         assert str(p) == '/pump/dump/'
 
         # absolute_if_not_empty is True.
-        p = furl.Path('a/b/c/', absolute_if_not_empty=True)
+        p = furl.Path('a/b/c/')
         assert p.add('d') == p
-        assert p.isabsolute
-        assert str(p) == '/a/b/c/d'
+        assert not p.isabsolute
+        assert p != '/a/b/c/d'
+        assert p == 'a/b/c/d'
         assert p.add('/') == p
-        assert p.isabsolute
-        assert str(p) == '/a/b/c/d/'
+        assert not p.isabsolute
+        assert str(p) == 'a/b/c/d/'
         assert p.add(['e', 'f', 'e e', '']) == p
-        assert p.isabsolute
-        assert str(p) == '/a/b/c/d/e/f/e%20e/'
+        assert not p.isabsolute
+        assert str(p) == 'a/b/c/d/e/f/e%20e/'
 
-        p = furl.Path(absolute_if_not_empty=True)
+        p = furl.Path()
         assert not p.isabsolute
         assert p.add('/') == p
         assert p.isabsolute
@@ -271,7 +268,7 @@ class TestPath(unittest.TestCase):
         assert p.isabsolute
         assert str(p) == '/pump'
 
-        p = furl.Path(absolute_if_not_empty=True)
+        p = furl.Path()
         assert not p.isabsolute
         assert p.add(['', '']) == p
         assert p.isabsolute
@@ -348,7 +345,7 @@ class TestPath(unittest.TestCase):
         assert str(p) == ''
 
         p = furl.Path('a/b/s%20s/')
-        assert p.remove('a/b/s s/') == p # Encoding Warning.
+        assert p.remove('a/b/s s/') == p  # Encoding Warning.
         assert str(p) == ''
 
         # Remove True.
@@ -446,6 +443,26 @@ class TestPath(unittest.TestCase):
         d = furl.Path('/some/long/path/possibly/')
         e = furl.Path('/some/long/path/possibly/')
         assert d == e
+
+    def test_equality_comparison_against_bad_type(self):
+        a = furl.Path('anything')
+        assert (a == None) is not True
+        assert (a == []) is not True
+        assert (a == object()) is not True
+        assert (a == unichr(40960) * 20) is not True
+
+    def test_hash_equality(self):
+        a = furl.Path('abcdefg')
+        b = furl.Path('abcdefg')
+        test_dict = {a: '1234'}
+        assert b in test_dict
+
+    def test_representation(self):
+        a = furl.Path('asdf')
+        assert repr(a) == "Path('asdf')"
+
+        a = furl.Path('/a/longer/path /with/stuff')
+        assert repr(a) == "Path('/a/longer/path%20/with/stuff')"
 
 
 class TestQuery(unittest.TestCase):
@@ -638,6 +655,10 @@ class TestQuery(unittest.TestCase):
                     urllib.quote_plus(str(value), "/?:@-._~!$'()*,;="))
             allitems_quoted.append(pair)
         return allitems_quoted
+
+    def test_representation(self):
+        a = furl.Query('a=1&b=2')
+        assert repr(a) == "Query('a=1&b=2')"
 
 
 class TestQueryCompositionInterface(unittest.TestCase):
@@ -1648,3 +1669,7 @@ class TestFurl(unittest.TestCase):
             assert furl.is_valid_encoded_query_value(valid)
         for invalid in invalids:
             assert not furl.is_valid_encoded_query_value(invalid)
+
+    def test_representation(self):
+        a = furl.Furl('http://test.com/path/string/;fragment=1/?a=b&1=2')
+        assert repr(a) == "Furl('http://test.com/path/string/;fragment=1/?a=b&1=2')"

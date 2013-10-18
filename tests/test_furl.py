@@ -451,19 +451,6 @@ class TestPath(unittest.TestCase):
         assert (a == object()) is not True
         assert (a == unichr(40960) * 20) is not True
 
-    def test_hash_equality(self):
-        a = furl.Path('abcdefg')
-        b = furl.Path('abcdefg')
-        test_dict = {a: '1234'}
-        assert b in test_dict
-
-    def test_representation(self):
-        a = furl.Path('asdf')
-        assert repr(a) == "Path('asdf')"
-
-        a = furl.Path('/a/longer/path /with/stuff')
-        assert repr(a) == "Path('/a/longer/path%20/with/stuff')"
-
 
 class TestQuery(unittest.TestCase):
     def setUp(self):
@@ -655,10 +642,6 @@ class TestQuery(unittest.TestCase):
                     urllib.quote_plus(str(value), "/?:@-._~!$'()*,;="))
             allitems_quoted.append(pair)
         return allitems_quoted
-
-    def test_representation(self):
-        a = furl.Query('a=1&b=2')
-        assert repr(a) == "Query('a=1&b=2')"
 
 
 class TestQueryCompositionInterface(unittest.TestCase):
@@ -1670,6 +1653,7 @@ class TestFurl(unittest.TestCase):
         for invalid in invalids:
             assert not furl.is_valid_encoded_query_value(invalid)
 
-    def test_representation(self):
-        a = furl.Furl('http://test.com/path/string/;fragment=1/?a=b&1=2')
-        assert repr(a) == "Furl('http://test.com/path/string/;fragment=1/?a=b&1=2')"
+    def test_set_url(self):
+        a = furl.Furl('http://test.com/some/test/path')
+        a.url = 'http://something.else.com/another/path/'
+        assert a == 'http://something.else.com/another/path/'

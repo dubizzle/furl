@@ -15,3 +15,9 @@ __license__ = 'Unlicense'
 __url__ = 'https://github.com/gruns/furl'
 
 from .core import *
+from .fragment import *
+from .helpers import *
+from .multidict import *
+from .path import *
+from .query import *
+from .stringlike import *

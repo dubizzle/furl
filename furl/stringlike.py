@@ -2,12 +2,26 @@ import abc
 
 
 class StringLikeObject(object):
-    """Represents a string-like object"""
+    """Represents a string-like object
+    Note that for pickling purposes this implements an Interface that defines that the
+    object should be reloadable through passing the string value alone as an argument.
+    """
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def __str__(self):
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def load(self, value):
+        """Load a value, perhaps from being unpickled"""
+        raise NotImplementedError()
+
+    def __getstate__(self):
+        return str(self)
+
+    def __setstate__(self, value):
+        self.load(value)
 
     def __len__(self):
         return len(str(self))

@@ -216,12 +216,8 @@ class TestPath(unittest.TestCase):
         assert str(p) == '/a/b/c/'
 
     def test_add(self):
-        # TODO: what is this?
-        # DEBUG DEBUG DEBUG
-        return True
-
         # URL paths.
-        p = URLPath('a/b/c/')
+        p = furl.Path('a/b/c/')
         assert p.add('d') == p
         assert not p.isabsolute
         assert str(p) == 'a/b/c/d'
@@ -232,7 +228,7 @@ class TestPath(unittest.TestCase):
         assert not p.isabsolute
         assert str(p) == 'a/b/c/d/e/f/e%20e/'
 
-        p = URLPath()
+        p = furl.Path()
         assert not p.isabsolute
         assert p.add('/') == p
         assert p.isabsolute
@@ -241,7 +237,7 @@ class TestPath(unittest.TestCase):
         assert p.isabsolute
         assert str(p) == '/pump'
 
-        p = URLPath()
+        p = furl.Path()
         assert not p.isabsolute
         assert p.add(['', '']) == p
         assert p.isabsolute
@@ -251,18 +247,19 @@ class TestPath(unittest.TestCase):
         assert str(p) == '/pump/dump/'
 
         # absolute_if_not_empty is True.
-        p = furl.Path('a/b/c/', absolute_if_not_empty=True)
+        p = furl.Path('a/b/c/')
         assert p.add('d') == p
-        assert p.isabsolute
-        assert str(p) == '/a/b/c/d'
+        assert not p.isabsolute
+        assert p != '/a/b/c/d'
+        assert p == 'a/b/c/d'
         assert p.add('/') == p
-        assert p.isabsolute
-        assert str(p) == '/a/b/c/d/'
+        assert not p.isabsolute
+        assert str(p) == 'a/b/c/d/'
         assert p.add(['e', 'f', 'e e', '']) == p
-        assert p.isabsolute
-        assert str(p) == '/a/b/c/d/e/f/e%20e/'
+        assert not p.isabsolute
+        assert str(p) == 'a/b/c/d/e/f/e%20e/'
 
-        p = furl.Path(absolute_if_not_empty=True)
+        p = furl.Path()
         assert not p.isabsolute
         assert p.add('/') == p
         assert p.isabsolute
@@ -271,7 +268,7 @@ class TestPath(unittest.TestCase):
         assert p.isabsolute
         assert str(p) == '/pump'
 
-        p = furl.Path(absolute_if_not_empty=True)
+        p = furl.Path()
         assert not p.isabsolute
         assert p.add(['', '']) == p
         assert p.isabsolute
@@ -348,7 +345,7 @@ class TestPath(unittest.TestCase):
         assert str(p) == ''
 
         p = furl.Path('a/b/s%20s/')
-        assert p.remove('a/b/s s/') == p # Encoding Warning.
+        assert p.remove('a/b/s s/') == p  # Encoding Warning.
         assert str(p) == ''
 
         # Remove True.

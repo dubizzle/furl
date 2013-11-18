@@ -68,18 +68,12 @@ class Path(StringLikeObject):
 
         Returns: <self>.
         """
-        if not isinstance(path, basestring):
-            # Segments, so iterate throught hem
-            path = [fix_encoding(item) for item in path]
-        else:
-            path = fix_encoding(path)
-
         if not path:
             segments = []
         elif hasattr(path, 'split') and callable(path.split): # String interface.
             segments = self._segments_from_path(path)
         else: # List interface.
-            segments = path
+            segments = fix_encoding(path)
 
         if self._force_absolute(self):
             self._isabsolute = True if segments else False
@@ -168,7 +162,7 @@ class Path(StringLikeObject):
         """
         # Raise a warning if self.strict is True and the user provided an improperly
         # encoded path string.
-        segments = path.split('/')
+        segments = [fix_encoding(item) for item in path.split('/')]
         if self.strict:
             for segment in segments:
                 if not is_valid_encoded_path_segment(segment):

@@ -2,8 +2,10 @@ import abc
 import urllib
 import warnings
 
-from .helpers import (join_path_segments, remove_path_segments,
-                      is_valid_encoded_path_segment)
+from .helpers import join_path_segments
+from .helpers import remove_path_segments
+from .helpers import is_valid_encoded_path_segment
+from .helpers import fix_encoding
 from .stringlike import StringLikeObject
 
 
@@ -66,6 +68,12 @@ class Path(StringLikeObject):
 
         Returns: <self>.
         """
+        if not isinstance(path, basestring):
+            # Segments, so iterate throught hem
+            path = [fix_encoding(item) for item in path]
+        else:
+            path = fix_encoding(path)
+
         if not path:
             segments = []
         elif hasattr(path, 'split') and callable(path.split): # String interface.

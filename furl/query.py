@@ -3,7 +3,9 @@ import urllib
 import urlparse
 import warnings
 
-from .helpers import is_valid_encoded_query_key, is_valid_encoded_query_value
+from .helpers import is_valid_encoded_query_key
+from .helpers import is_valid_encoded_query_value
+from .helpers import fix_encoding
 from .multidict import OneDimensionalOrderedMultidict
 from .stringlike import StringLikeObject
 
@@ -69,7 +71,6 @@ class Query(StringLikeObject):
 
     def __init__(self, query='', strict=False):
         self.strict = strict
-
         self._params = OneDimensionalOrderedMultidict()
 
         self.load(query)
@@ -203,7 +204,10 @@ class Query(StringLikeObject):
             items = urlparse.parse_qsl(items, keep_blank_values=True)
         # Default to list of key:value items interface. i.e. [('a','1'), ('b','2')]
         else:
-            item = list(items)
+            items = list(items)
+
+        # Ensure utf-8 encoding
+        items = [(fix_encoding(key), fix_encoding(value)) for key, value in items]
 
         return items
 

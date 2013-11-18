@@ -10,7 +10,10 @@ import urlparse
 import warnings
 
 from .fragment import FragmentCompositionInterface
-from .helpers import urlsplit, urljoin, is_valid_port
+from .helpers import urlsplit
+from .helpers import urljoin
+from .helpers import is_valid_port
+from .helpers import fix_encoding
 from .path import PathCompositionInterface, URLPathCompositionInterface
 from .query import QueryCompositionInterface
 from .stringlike import StringLikeObject
@@ -74,7 +77,7 @@ class Furl(StringLikeObject, URLPathCompositionInterface, QueryCompositionInterf
         FragmentCompositionInterface.__init__(self, strict=strict)
         self.strict = strict
 
-        self.load(str(url)) # Raises ValueError on invalid url.
+        self.load(fix_encoding(url))  # Raises ValueError on invalid url.
 
     def load(self, url):
         """

@@ -1,3 +1,4 @@
+# coding=utf-8
 #
 # furl - URL manipulation made simple.
 #
@@ -120,6 +121,10 @@ class TestPath(unittest.TestCase):
             p = furl.Path(path)
             assert p.isfile
             assert not p.isdir
+
+    def test_iri(self):
+        path = furl.Path(u'/some/كهربائي/arabic/')
+        str(path)
 
     def test_leading_slash(self):
         p = furl.Path('')
@@ -513,6 +518,10 @@ class TestQuery(unittest.TestCase):
             else:
                 assert not q
 
+    def test_iris(self):
+        query = furl.Query(u'param=كهربائي')
+        str(query)  # Should not throw error
+
     def test_load(self):
         for items in self.items:
             q = furl.Query(items.original())
@@ -713,6 +722,10 @@ class TestFragment(unittest.TestCase):
             assert str(f.path) == path
             assert f.query.params == query
 
+    def test_iri_fragment(self):
+        fragment = furl.Fragment(u'كهربائي?param=كهربائي')
+        str(fragment)
+
     def test_add(self):
         f = furl.Fragment('')
         assert f is f.add(path='one two three', args={'a': 'a', 's': 's s'})
@@ -844,6 +857,10 @@ class TestFurl(unittest.TestCase):
         # result of using urlparse.urlsplit(), this little helper function only
         # works when provided urls whos schemes are also in urlparse.uses_query.
         return (key, val) in urlparse.parse_qsl(urlparse.urlsplit(url).query, True)
+
+    def test_iri_furl(self):
+        thing = furl.Furl(u'http://example.com/كهربائي/?param=كهربائي')
+        str(thing)
 
     def test_username_and_password(self):
         # Empty usernames and passwords.

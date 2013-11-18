@@ -206,3 +206,10 @@ def is_valid_encoded_query_key(key):
 
 def is_valid_encoded_query_value(value):
     return bool(VALID_ENCODED_QUERY_VALUE_REGEX.match(value))
+
+
+def fix_encoding(item):
+    if isinstance(item, unicode):
+        item = item.encode('utf-8')
+
+    return item

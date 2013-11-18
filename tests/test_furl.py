@@ -126,6 +126,10 @@ class TestPath(unittest.TestCase):
         path = furl.Path(u'/some/كهربائي/arabic/')
         str(path)
 
+    def test_path_inside_path(self):
+        instance = furl.Path('/some/path/')
+        assert furl.Furl(instance) == '/some/path/'
+
     def test_leading_slash(self):
         p = furl.Path('')
         assert not p.isabsolute
@@ -861,6 +865,10 @@ class TestFurl(unittest.TestCase):
     def test_iri_furl(self):
         thing = furl.Furl(u'http://example.com/كهربائي/?param=كهربائي')
         str(thing)
+
+    def test_furl_recursive(self):
+        instance = furl.Furl('/some/path?param=1')
+        assert furl.Furl(instance) == '/some/path?param=1'
 
     def test_username_and_password(self):
         # Empty usernames and passwords.

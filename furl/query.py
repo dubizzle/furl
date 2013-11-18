@@ -136,6 +136,8 @@ class Query(StringLikeObject):
         """
         pairs = []
         for key, value in self.params.iterallitems():
+            key = fix_encoding(key)
+            value = fix_encoding(value)
             pair = '='.join((urllib.quote_plus(str(key), self.SAFE_KEY_CHARS),
                              urllib.quote_plus(str(value), self.SAFE_VALUE_CHARS)))
             pairs.append(pair)
